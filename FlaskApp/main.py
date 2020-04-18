@@ -36,7 +36,7 @@ def login():
         user = session.query(users.User).filter(users.User.email == form.email.data).first()
         if user and user.check_password(form.password.data):
             login_user(user, remember=form.remember_me.data)
-            return redirect("/")
+            return redirect("/product")
         return render_template('login.html',
                                message="Неправильный логин или пароль",
                                form=form)
@@ -68,21 +68,6 @@ def reqister():
     return render_template('register.html', title='Регистрация', form=form)
 
 
-@app.route("/cookie_test")
-def cookie_test():
-    visits_count = int(request.cookies.get("visits_count", 0))
-    if visits_count:
-        res = make_response(f"Вы пришли на эту страницу {visits_count + 1} раз")
-        res.set_cookie("visits_count", str(visits_count + 1),
-                       max_age=60 * 60 * 24 * 365 * 2)
-    else:
-        res = make_response(
-            "Вы пришли на эту страницу в первый раз за последние 2 года")
-        res.set_cookie("visits_count", '1',
-                       max_age=60 * 60 * 24 * 365 * 2)
-    return res
-
-
 @app.route("/product")
 def index():
     session = db_session.create_session()
@@ -91,14 +76,14 @@ def index():
             (products.Products.user == current_user) | (products.Products.is_private == 0))
     else:
         news = session.query(products.Products).filter(products.Products.is_private == 0)
-    return render_template("product.html", news=news)
+    return render_template("index.html", news=news)
 
 
 @app.route('/logout')
 @login_required
 def logout():
     logout_user()
-    return redirect("/")
+    return redirect("/product")
 
 
 @app.route('/news',  methods=['GET', 'POST'])
@@ -114,8 +99,8 @@ def add_news():
         current_user.news.append(news)
         session.merge(current_user)
         session.commit()
-        return redirect('/')
-    return render_template('products.html', title='Добавление новости',
+        return redirect('/product')
+    return render_template('products.html', title='Добавление продукта',
                            form=form)
 
 
@@ -126,7 +111,7 @@ def edit_news(id):
     if request.method == "GET":
         session = db_session.create_session()
         news = session.query(products.Products).filter(products.Products.id == id,
-                                                   products.Products.user == current_user).first()
+                                                       products.Products.user == current_user).first()
         if news:
             form.title.data = news.title
             form.content.data = news.content
@@ -136,16 +121,16 @@ def edit_news(id):
     if form.validate_on_submit():
         session = db_session.create_session()
         news = session.query(products.Products).filter(products.Products.id == id,
-                                                   products.Products.user == current_user).first()
+                                                       products.Products.user == current_user).first()
         if news:
             news.title = form.title.data
             news.content = form.content.data
             news.is_private = form.is_private.data
             session.commit()
-            return redirect('/')
+            return redirect('/product')
         else:
             abort(404)
-    return render_template('products.html', title='Редактирование новости', form=form)
+    return render_template('products.html', title='Редактирование товара', form=form)
 
 
 @app.route('/news_delete/<int:id>', methods=['GET', 'POST'])
@@ -153,13 +138,13 @@ def edit_news(id):
 def news_delete(id):
     session = db_session.create_session()
     news = session.query(products.Products).filter(products.Products.id == id,
-                                               products.Products.user == current_user).first()
+                                                   products.Products.user == current_user).first()
     if news:
         session.delete(news)
         session.commit()
     else:
         abort(404)
-    return redirect('/')
+    return redirect('/product')
 
 
 @app.errorhandler(404)

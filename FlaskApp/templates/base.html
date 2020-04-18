@@ -32,7 +32,7 @@
               Коробочка
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <a class="dropdown-item" href="#">Первый объект</a>
+              <a class="dropdown-item" href="/product">Продукты</a>
               <a class="dropdown-item" href="#">Второй объект</a>
               <div class="dropdown-divider"></div>
               <a class="dropdown-item" href="#">Что-нибудь ещё</a>
@@ -44,10 +44,14 @@
         </ul>
         <form class="form-inline">
         <div class="input-group">
+            <nav class="navbar navbar-light bg-light">
+        {% if current_user.is_authenticated %}
           <div class="input-group-prepend">
             <span class="input-group-text" id="basic-addon1">@</span>
           </div>
-          <input type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
+            <a type="text" class="form-control" href="/logout">{{ current_user.name }}</a>
+        {% endif %}
+            </nav>
         </div>
       </form>
       </div>

@@ -1,7 +1,17 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Добавление новости</h1>
+<style>
+  .fakeimg {
+      height: 200px;
+      background: #aaa;
+  }
+</style>
+<div class="jumbotron text-center" style="margin-bottom:0">
+  <h1>Крошки на ножках</h1>
+  <h2>Добавление товара</h2>
+</div>
+<nav style="background-color: #bbbbbb;">
 <form action="" method="post">
     {{ form.hidden_tag() }}
     {{ form.csrf_token }}
@@ -24,7 +34,8 @@
         {% endfor %}
     </p>
     <p>{{ form.is_private() }} {{ form.is_private.label }}</p>
-    <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+    <p>{{ form.submit(type="submit", class="btn btn-secondary") }}</p>
     {{message}}
 </form>
+</nav>
 {% endblock %}
